@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, Float, Integer, String, Text, func
+from sqlalchemy import Boolean, DateTime, Float, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -26,6 +26,12 @@ class Ticket(Base):
     sla_hours: Mapped[int] = mapped_column(Integer, default=12)
     sla_due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     priority_reason: Mapped[str] = mapped_column(String(500), default="")
+
+    draft_reply: Mapped[str] = mapped_column(Text, default="")
+    reply_confidence: Mapped[float] = mapped_column(Float, default=0.0)
+    reply_source: Mapped[str] = mapped_column(String(16), default="")
+    reply_source_refs: Mapped[str] = mapped_column(Text, default="[]")
+    needs_human_review: Mapped[bool] = mapped_column(Boolean, default=True)
 
     status: Mapped[str] = mapped_column(String(32), default="new")
 

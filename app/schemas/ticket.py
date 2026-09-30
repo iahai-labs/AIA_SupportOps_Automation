@@ -19,6 +19,15 @@ class TicketClassification(BaseModel):
     source: str
 
 
+class ReplyDraftRead(BaseModel):
+    ticket_id: int
+    reply: str
+    confidence: float
+    source_refs: list[str]
+    source: str
+    needs_human_review: bool
+
+
 class TicketRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -39,6 +48,12 @@ class TicketRead(BaseModel):
     sla_hours: int
     sla_due_at: datetime | None
     priority_reason: str
+
+    draft_reply: str
+    reply_confidence: float
+    reply_source: str
+    reply_source_refs: str
+    needs_human_review: bool
 
     status: str
     created_at: datetime
