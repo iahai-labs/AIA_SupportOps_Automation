@@ -28,6 +28,24 @@ class ReplyDraftRead(BaseModel):
     needs_human_review: bool
 
 
+class TicketReviewRequest(BaseModel):
+    reviewed_by: str = Field(min_length=1, max_length=120)
+    note: str = Field(default="", max_length=1000)
+
+
+class TicketApproveRequest(TicketReviewRequest):
+    approved_reply: str | None = Field(default=None, max_length=5000)
+
+
+class TicketReviewRead(BaseModel):
+    ticket_id: int
+    status: str
+    approved_reply: str
+    reviewed_by: str
+    review_note: str
+    reviewed_at: datetime
+
+
 class TicketRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -54,6 +72,11 @@ class TicketRead(BaseModel):
     reply_source: str
     reply_source_refs: str
     needs_human_review: bool
+
+    approved_reply: str
+    reviewed_by: str
+    review_note: str
+    reviewed_at: datetime | None
 
     status: str
     created_at: datetime

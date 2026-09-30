@@ -33,6 +33,11 @@ class Ticket(Base):
     reply_source_refs: Mapped[str] = mapped_column(Text, default="[]")
     needs_human_review: Mapped[bool] = mapped_column(Boolean, default=True)
 
+    approved_reply: Mapped[str] = mapped_column(Text, default="")
+    reviewed_by: Mapped[str] = mapped_column(String(120), default="")
+    review_note: Mapped[str] = mapped_column(String(1000), default="")
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
     status: Mapped[str] = mapped_column(String(32), default="new")
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

@@ -7,6 +7,7 @@ from app.schemas.ticket import TicketCreate
 from app.services.classification_service import ClassificationResult
 from app.services.priority_service import PriorityDecision
 from app.services.reply_drafting import ReplyDraftResult
+from app.services.review_service import ReviewDecision
 
 
 def create_ticket(
@@ -52,6 +53,23 @@ def save_reply_draft(
     ticket.reply_source_refs = json.dumps(draft.source_refs)
     ticket.needs_human_review = draft.needs_human_review
     ticket.status = "waiting_review"
+
+    db.add(ticket)
+    db.commit()
+    db.refresh(ticket)
+    return ticket
+
+
+def save_review_decision(
+    db: Session,
+    ticket: Ticket,
+    decision: ReviewDecision,
+) -> Ticket:
+    ticket.status = decision.status
+    ticket.approved_reply = decision.approved_reply
+    ticket.reviewed_by = decision.reviewed_by
+    ticket.review_note = decision.review_note
+    ticket.reviewed_at = decision.reviewed_at
 
     db.add(ticket)
     db.commit()

@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_name: str = "AIA SupportOps Automation"
-    app_version: str = "0.5.0"
+    app_version: str = "0.6.0"
     database_url: str = "sqlite:///./supportops.db"
 
     ai_provider: str = "openai-compatible"
