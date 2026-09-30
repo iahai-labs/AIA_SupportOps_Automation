@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_name: str = "AIA SupportOps Automation"
-    app_version: str = "0.6.0"
+    app_version: str = "0.7.0"
     database_url: str = "sqlite:///./supportops.db"
 
     ai_provider: str = "openai-compatible"
@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     ai_model: str = "llama-3.1-8b-instant"
     ai_api_key: str | None = None
     ai_timeout_seconds: float = 15.0
+
+    n8n_webhook_url: str | None = None
+    n8n_webhook_secret: str | None = None
+    automation_timeout_seconds: float = 5.0
+    automation_max_attempts: int = 3
 
     model_config = SettingsConfigDict(
         env_file=".env",
