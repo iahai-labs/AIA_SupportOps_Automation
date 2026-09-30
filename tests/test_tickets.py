@@ -17,7 +17,12 @@ def test_create_ticket(client) -> None:
     assert data["urgency"] == "normal"
     assert data["language"] == "en"
     assert data["classification_source"] == "fallback"
+
     assert data["priority"] == "normal"
+    assert data["sla_hours"] == 8
+    assert data["sla_due_at"] is not None
+    assert "account" in data["priority_reason"].lower()
+
     assert data["status"] == "new"
 
 
