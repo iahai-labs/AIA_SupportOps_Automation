@@ -9,6 +9,16 @@ class TicketCreate(BaseModel):
     subject: str = Field(min_length=1, max_length=200)
     message: str = Field(min_length=3, max_length=5000)
 
+
+class TicketClassification(BaseModel):
+    category: str
+    urgency: str
+    language: str
+    summary: str
+    confidence: float
+    source: str
+
+
 class TicketRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -17,7 +27,14 @@ class TicketRead(BaseModel):
     customer_email: EmailStr
     subject: str
     message: str
+
     category: str
+    urgency: str
+    language: str
+    summary: str
+    classification_confidence: float
+    classification_source: str
+
     priority: str
     status: str
     created_at: datetime

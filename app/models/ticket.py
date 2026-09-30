@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, String, Text, func
+from sqlalchemy import DateTime, Float, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -16,10 +16,18 @@ class Ticket(Base):
     message: Mapped[str] = mapped_column(Text)
 
     category: Mapped[str] = mapped_column(String(32), default="unclassified")
+    urgency: Mapped[str] = mapped_column(String(16), default="unknown")
+    language: Mapped[str] = mapped_column(String(16), default="unknown")
+    summary: Mapped[str] = mapped_column(String(500), default="")
+    classification_confidence: Mapped[float] = mapped_column(Float, default=0.0)
+    classification_source: Mapped[str] = mapped_column(String(16), default="fallback")
+
     priority: Mapped[str] = mapped_column(String(16), default="normal")
     status: Mapped[str] = mapped_column(String(32), default="new")
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
     )
