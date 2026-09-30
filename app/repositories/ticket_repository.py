@@ -1,9 +1,12 @@
+import json
+
 from sqlalchemy.orm import Session
 
 from app.models.ticket import Ticket
 from app.schemas.ticket import TicketCreate
 from app.services.classification_service import ClassificationResult
 from app.services.priority_service import PriorityDecision
+from app.services.reply_drafting import ReplyDraftResult
 
 
 def create_ticket(
@@ -36,3 +39,21 @@ def create_ticket(
 
 def get_ticket(db: Session, ticket_id: int) -> Ticket | None:
     return db.get(Ticket, ticket_id)
+
+
+def save_reply_draft(
+    db: Session,
+    ticket: Ticket,
+    draft: ReplyDraftResult,
+) -> Ticket:
+    ticket.draft_reply = draft.reply
+    ticket.reply_confidence = draft.confidence
+    ticket.reply_source = draft.source
+    ticket.reply_source_refs = json.dumps(draft.source_refs)
+    ticket.needs_human_review = draft.needs_human_review
+    ticket.status = "waiting_review"
+
+    db.add(ticket)
+    db.commit()
+    db.refresh(ticket)
+    return ticket

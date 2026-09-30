@@ -1,13 +1,20 @@
+import json
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.db.deps import get_db
-from app.repositories.ticket_repository import create_ticket, get_ticket
+from app.repositories.ticket_repository import (
+    create_ticket,
+    get_ticket,
+    save_reply_draft,
+)
 from app.schemas.knowledge import KnowledgeMatch, KnowledgeRetrievalResult
-from app.schemas.ticket import TicketCreate, TicketRead
+from app.schemas.ticket import ReplyDraftRead, TicketCreate, TicketRead
 from app.services.classification_service import classify_ticket
 from app.services.knowledge_retrieval import retrieve_knowledge
 from app.services.priority_service import decide_priority
+from app.services.reply_drafting import draft_reply
 
 router = APIRouter(prefix="/tickets", tags=["tickets"])
 
@@ -63,4 +70,36 @@ def get_ticket_knowledge_endpoint(
             )
             for match in result.matches
         ],
+    )
+
+
+@router.post("/{ticket_id}/draft", response_model=ReplyDraftRead)
+def create_reply_draft_endpoint(
+    ticket_id: int,
+    db: Session = Depends(get_db),
+) -> ReplyDraftRead:
+    ticket = get_ticket(db, ticket_id)
+    if ticket is None:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+
+    retrieval = retrieve_knowledge(
+        db,
+        f"{ticket.subject} {ticket.message}",
+        category=ticket.category,
+    )
+    draft = draft_reply(
+        customer_name=ticket.customer_name,
+        subject=ticket.subject,
+        message=ticket.message,
+        retrieval=retrieval,
+    )
+    saved = save_reply_draft(db, ticket, draft)
+
+    return ReplyDraftRead(
+        ticket_id=saved.id,
+        reply=saved.draft_reply,
+        confidence=saved.reply_confidence,
+        source_refs=json.loads(saved.reply_source_refs),
+        source=saved.reply_source,
+        needs_human_review=saved.needs_human_review,
     )
