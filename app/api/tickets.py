@@ -8,13 +8,22 @@ from app.repositories.ticket_repository import (
     create_ticket,
     get_ticket,
     save_reply_draft,
+    save_review_decision,
 )
 from app.schemas.knowledge import KnowledgeMatch, KnowledgeRetrievalResult
-from app.schemas.ticket import ReplyDraftRead, TicketCreate, TicketRead
+from app.schemas.ticket import (
+    ReplyDraftRead,
+    TicketApproveRequest,
+    TicketCreate,
+    TicketRead,
+    TicketReviewRead,
+    TicketReviewRequest,
+)
 from app.services.classification_service import classify_ticket
 from app.services.knowledge_retrieval import retrieve_knowledge
 from app.services.priority_service import decide_priority
 from app.services.reply_drafting import draft_reply
+from app.services.review_service import approve_ticket, reject_ticket
 
 router = APIRouter(prefix="/tickets", tags=["tickets"])
 
@@ -102,4 +111,67 @@ def create_reply_draft_endpoint(
         source_refs=json.loads(saved.reply_source_refs),
         source=saved.reply_source,
         needs_human_review=saved.needs_human_review,
+    )
+
+
+@router.post("/{ticket_id}/approve", response_model=TicketReviewRead)
+def approve_ticket_endpoint(
+    ticket_id: int,
+    payload: TicketApproveRequest,
+    db: Session = Depends(get_db),
+) -> TicketReviewRead:
+    ticket = get_ticket(db, ticket_id)
+    if ticket is None:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+
+    try:
+        decision = approve_ticket(
+            ticket,
+            reviewed_by=payload.reviewed_by,
+            note=payload.note,
+            approved_reply=payload.approved_reply,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+    saved = save_review_decision(db, ticket, decision)
+
+    return TicketReviewRead(
+        ticket_id=saved.id,
+        status=saved.status,
+        approved_reply=saved.approved_reply,
+        reviewed_by=saved.reviewed_by,
+        review_note=saved.review_note,
+        reviewed_at=saved.reviewed_at,
+    )
+
+
+@router.post("/{ticket_id}/reject", response_model=TicketReviewRead)
+def reject_ticket_endpoint(
+    ticket_id: int,
+    payload: TicketReviewRequest,
+    db: Session = Depends(get_db),
+) -> TicketReviewRead:
+    ticket = get_ticket(db, ticket_id)
+    if ticket is None:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+
+    try:
+        decision = reject_ticket(
+            ticket,
+            reviewed_by=payload.reviewed_by,
+            note=payload.note,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+    saved = save_review_decision(db, ticket, decision)
+
+    return TicketReviewRead(
+        ticket_id=saved.id,
+        status=saved.status,
+        approved_reply=saved.approved_reply,
+        reviewed_by=saved.reviewed_by,
+        review_note=saved.review_note,
+        reviewed_at=saved.reviewed_at,
     )

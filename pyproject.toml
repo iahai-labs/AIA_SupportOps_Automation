@@ -1,6 +1,6 @@
 [project]
 name = "aia-supportops-automation"
-version = "0.5.0"
+version = "0.6.0"
 description = "AI-assisted customer support operations automation."
 requires-python = ">=3.11"
 
