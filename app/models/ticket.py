@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, Float, String, Text, func
+from sqlalchemy import DateTime, Float, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -23,6 +23,10 @@ class Ticket(Base):
     classification_source: Mapped[str] = mapped_column(String(16), default="fallback")
 
     priority: Mapped[str] = mapped_column(String(16), default="normal")
+    sla_hours: Mapped[int] = mapped_column(Integer, default=12)
+    sla_due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    priority_reason: Mapped[str] = mapped_column(String(500), default="")
+
     status: Mapped[str] = mapped_column(String(32), default="new")
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

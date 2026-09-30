@@ -36,6 +36,10 @@ class TicketRead(BaseModel):
     classification_source: str
 
     priority: str
+    sla_hours: int
+    sla_due_at: datetime | None
+    priority_reason: str
+
     status: str
     created_at: datetime
     updated_at: datetime

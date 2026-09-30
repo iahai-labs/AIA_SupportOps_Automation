@@ -3,12 +3,14 @@ from sqlalchemy.orm import Session
 from app.models.ticket import Ticket
 from app.schemas.ticket import TicketCreate
 from app.services.classification_service import ClassificationResult
+from app.services.priority_service import PriorityDecision
 
 
 def create_ticket(
     db: Session,
     payload: TicketCreate,
     classification: ClassificationResult,
+    priority: PriorityDecision,
 ) -> Ticket:
     ticket = Ticket(
         customer_name=payload.customer_name.strip(),
@@ -21,6 +23,10 @@ def create_ticket(
         summary=classification.summary,
         classification_confidence=classification.confidence,
         classification_source=classification.source,
+        priority=priority.priority,
+        sla_hours=priority.sla_hours,
+        sla_due_at=priority.sla_due_at,
+        priority_reason=priority.reason,
     )
     db.add(ticket)
     db.commit()
