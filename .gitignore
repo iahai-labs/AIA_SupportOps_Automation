@@ -5,7 +5,13 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .env
+.env.*
+!.env.example
+!.env.prod.example
 .coverage
 htmlcov/
 .idea/
 .vscode/
+*.db
+*.sqlite
+*.sqlite3
