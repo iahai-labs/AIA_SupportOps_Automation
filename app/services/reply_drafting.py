@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from app.core.config import settings
 from app.integrations.llm import LLMProvider, OpenAICompatibleProvider
 from app.services.knowledge_retrieval import RetrievalResult
 
@@ -90,10 +91,10 @@ def draft_reply(
     provider: LLMProvider | None = None,
 ) -> ReplyDraftResult:
     if not retrieval.matches:
-        return _fallback_reply(
-            customer_name=customer_name,
-            retrieval=retrieval,
-        )
+        return _fallback_reply(customer_name=customer_name, retrieval=retrieval)
+
+    if settings.demo_safe_mode and not settings.demo_allow_external_ai:
+        return _fallback_reply(customer_name=customer_name, retrieval=retrieval)
 
     provider = provider or OpenAICompatibleProvider()
 
@@ -134,7 +135,4 @@ def draft_reply(
             needs_human_review=confidence < 0.45,
         )
     except Exception:
-        return _fallback_reply(
-            customer_name=customer_name,
-            retrieval=retrieval,
-        )
+        return _fallback_reply(customer_name=customer_name, retrieval=retrieval)

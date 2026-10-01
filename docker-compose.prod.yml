@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: supportops
+      POSTGRES_USER: supportops
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - supportops_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U supportops -d supportops"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_NAME: AIA SupportOps Automation
+      APP_VERSION: 0.10.0
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql+psycopg://supportops:${POSTGRES_PASSWORD}@db:5432/supportops
+
+      DEMO_SAFE_MODE: "true"
+      DEMO_ALLOW_EXTERNAL_AI: "false"
+      DEMO_ALLOW_EXTERNAL_AUTOMATION: "false"
+
+      AI_PROVIDER: openai-compatible
+      AI_BASE_URL: https://api.groq.com/openai/v1
+      AI_MODEL: llama-3.1-8b-instant
+      AI_API_KEY: ${AI_API_KEY:-}
+
+      N8N_WEBHOOK_URL: ${N8N_WEBHOOK_URL:-}
+      N8N_WEBHOOK_SECRET: ${N8N_WEBHOOK_SECRET:-}
+      AUTOMATION_TIMEOUT_SECONDS: "5"
+      AUTOMATION_MAX_ATTEMPTS: "3"
+    ports:
+      - "127.0.0.1:8003:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  supportops_pgdata:
