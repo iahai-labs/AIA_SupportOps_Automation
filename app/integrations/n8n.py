@@ -15,6 +15,9 @@ class WebhookResult:
 
 
 def send_support_webhook(payload: dict[str, object]) -> WebhookResult:
+    if settings.demo_safe_mode and not settings.demo_allow_external_automation:
+        return WebhookResult(status="skipped", attempts=0)
+
     if not settings.n8n_webhook_url:
         return WebhookResult(status="skipped", attempts=0)
 
@@ -38,4 +41,8 @@ def send_support_webhook(payload: dict[str, object]) -> WebhookResult:
         except Exception as exc:
             last_error = str(exc)
 
-    return WebhookResult(status="failed", attempts=max_attempts, last_error=last_error)
+    return WebhookResult(
+        status="failed",
+        attempts=max_attempts,
+        last_error=last_error,
+    )

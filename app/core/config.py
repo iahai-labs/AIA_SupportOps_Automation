@@ -3,8 +3,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_name: str = "AIA SupportOps Automation"
-    app_version: str = "0.9.0"
+    app_version: str = "0.10.0"
+    environment: str = "development"
     database_url: str = "sqlite:///./supportops.db"
+
+    demo_safe_mode: bool = False
+    demo_allow_external_ai: bool = False
+    demo_allow_external_automation: bool = False
 
     ai_provider: str = "openai-compatible"
     ai_base_url: str = "https://api.groq.com/openai/v1"
