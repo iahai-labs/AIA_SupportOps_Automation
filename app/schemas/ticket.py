@@ -44,6 +44,16 @@ class TicketReviewRead(BaseModel):
     reviewed_by: str
     review_note: str
     reviewed_at: datetime
+    automation_status: str
+    automation_attempts: int
+    automation_last_error: str
+
+
+class AutomationRetryRead(BaseModel):
+    ticket_id: int
+    automation_status: str
+    automation_attempts: int
+    automation_last_error: str
 
 
 class TicketRead(BaseModel):
@@ -54,30 +64,28 @@ class TicketRead(BaseModel):
     customer_email: EmailStr
     subject: str
     message: str
-
     category: str
     urgency: str
     language: str
     summary: str
     classification_confidence: float
     classification_source: str
-
     priority: str
     sla_hours: int
     sla_due_at: datetime | None
     priority_reason: str
-
     draft_reply: str
     reply_confidence: float
     reply_source: str
     reply_source_refs: str
     needs_human_review: bool
-
     approved_reply: str
     reviewed_by: str
     review_note: str
     reviewed_at: datetime | None
-
+    automation_status: str
+    automation_attempts: int
+    automation_last_error: str
     status: str
     created_at: datetime
     updated_at: datetime
