@@ -3,9 +3,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_name: str = "AIA SupportOps Automation"
-    app_version: str = "0.10.0"
+    app_version: str = "0.10.1"
     environment: str = "development"
     database_url: str = "sqlite:///./supportops.db"
+
+    root_path: str = ""
 
     demo_safe_mode: bool = False
     demo_allow_external_ai: bool = False
