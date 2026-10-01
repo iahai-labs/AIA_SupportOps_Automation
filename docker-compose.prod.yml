@@ -24,8 +24,9 @@ services:
         condition: service_healthy
     environment:
       APP_NAME: AIA SupportOps Automation
-      APP_VERSION: 0.10.0
+      APP_VERSION: 0.10.1
       ENVIRONMENT: production
+      ROOT_PATH: /supportops
       DATABASE_URL: postgresql+psycopg://supportops:${POSTGRES_PASSWORD}@db:5432/supportops
 
       DEMO_SAFE_MODE: "true"

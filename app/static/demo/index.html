@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AIA SupportOps Demo</title>
   <meta name="description" content="Interactive demo for AIA SupportOps Automation">
-  <link rel="stylesheet" href="/static/demo/style.css">
+  <script>window.APP_BASE = "__APP_BASE__";</script>
+  <link rel="stylesheet" href="__APP_BASE__/static/demo/style.css">
 </head>
 <body>
   <main class="shell">
@@ -18,7 +19,7 @@
           human approval, workflow automation, and auditability.
         </p>
       </div>
-      <span class="badge">Demo v0.9.0</span>
+      <span class="badge">Demo v0.10.1</span>
     </header>
 
     <section class="panel">
@@ -133,10 +134,10 @@
 
     <footer>
       <span>Portfolio demo • API-driven • Human approval before outbound automation</span>
-      <a href="/docs">OpenAPI docs</a>
+      <a id="docsLink" href="#">OpenAPI docs</a>
     </footer>
   </main>
 
-  <script src="/static/demo/app.js" defer></script>
+  <script src="__APP_BASE__/static/demo/app.js" defer></script>
 </body>
 </html>

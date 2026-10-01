@@ -1,8 +1,11 @@
 const $ = (id) => document.getElementById(id);
+const BASE = (window.APP_BASE || "").replace(/\/$/, "");
+const url = (path) => `${BASE}${path}`;
+
 let currentTicket = null;
 
 async function api(path, options = {}) {
-  const response = await fetch(path, {
+  const response = await fetch(url(path), {
     headers: { "Content-Type": "application/json", ...(options.headers || {}) },
     ...options,
   });
@@ -44,6 +47,8 @@ async function refreshTicket() {
   currentTicket = await api(`/api/v1/tickets/${currentTicket.id}`);
   renderSnapshot(currentTicket);
 }
+
+$("docsLink").href = url("/docs");
 
 $("sampleBtn").addEventListener("click", () => {
   $("customerName").value = "Sarah Miller";
@@ -152,15 +157,13 @@ $("approveBtn").addEventListener("click", async () => {
   $("reviewStatus").textContent = "Approving...";
 
   try {
-    const payload = {
-      reviewed_by: $("reviewer").value,
-      note: $("reviewNote").value,
-      approved_reply: $("draftText").value || null,
-    };
-
     const result = await api(`/api/v1/tickets/${currentTicket.id}/approve`, {
       method: "POST",
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        reviewed_by: $("reviewer").value,
+        note: $("reviewNote").value,
+        approved_reply: $("draftText").value || null,
+      }),
     });
 
     $("reviewStatus").textContent = `Approved by ${result.reviewed_by}.`;
