@@ -2,6 +2,7 @@ import json
 
 from sqlalchemy.orm import Session
 
+from app.integrations.n8n import WebhookResult
 from app.models.ticket import Ticket
 from app.schemas.ticket import TicketCreate
 from app.services.classification_service import ClassificationResult
@@ -70,6 +71,21 @@ def save_review_decision(
     ticket.reviewed_by = decision.reviewed_by
     ticket.review_note = decision.review_note
     ticket.reviewed_at = decision.reviewed_at
+
+    db.add(ticket)
+    db.commit()
+    db.refresh(ticket)
+    return ticket
+
+
+def save_automation_result(
+    db: Session,
+    ticket: Ticket,
+    result: WebhookResult,
+) -> Ticket:
+    ticket.automation_status = result.status
+    ticket.automation_attempts = result.attempts
+    ticket.automation_last_error = result.last_error or ""
 
     db.add(ticket)
     db.commit()
