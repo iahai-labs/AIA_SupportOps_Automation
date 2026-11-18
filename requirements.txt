@@ -1,9 +1,9 @@
-fastapi==0.118.0
-uvicorn[standard]==0.37.0
-sqlalchemy==2.0.43
-psycopg[binary]==3.2.10
-pydantic-settings==2.11.0
-email-validator==2.3.0
-pytest==8.4.2
+fastapi==0.163.0
+uvicorn[standard]==0.54.0
+sqlalchemy==2.1.8
+psycopg[binary]==3.3.9
+pydantic-settings==2.16.3
+email-validator==2.4.0
+pytest==9.2.0
 httpx==0.28.1
-ruff==0.13.2
+ruff==0.17.5
